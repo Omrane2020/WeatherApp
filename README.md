@@ -77,9 +77,14 @@ GOOGLE_CLIENT_ID=your_google_client_id
 - Axios
 
 ## Captures d'écran
-
-(Décrivez ou ajoutez des images ici : écran de connexion, écran météo réduit et étendu, animations de chargement.)
-
+![interface login](/ScreenShoot/2425.jpg)
+![warning alert](/ScreenShoot/2435.jpg)
+![alerts echec](/ScreenShoot/2437.jpg)
+![connexion avec firebass](/ScreenShoot/Screenshot_20251226-203306.jpg)
+![interface principale](/ScreenShoot/2433.jpg)
+![interface principale'](/ScreenShoot/Screenshot_20251226-210918.png)
+![Consamation de'api](/ScreenShoot/Screenshot_20251226-210945.png)
+![Alert de Historique qui'l soit efface ](/ScreenShoot/Screenshot_20251226-201945.jpg)
 ## Gestion des erreurs
 
 - Erreurs d'authentification affichées via Alert.
