@@ -9,11 +9,8 @@ import {
     TouchableOpacity,
     TextStyle
 } from 'react-native';
-import { signInWithEmailAndPassword, signInWithCredential, GoogleAuthProvider } from 'firebase/auth';
-import { auth } from '../services/firebase';
-import * as AuthSession from 'expo-auth-session';
 import { useAuth } from '../context/AuthContext';
-import { useAlert } from '../context/AlertContext';
+import { useAuthLogic } from '../hooks/useAuthLogic';
 import CustomButton from '../components/CustomButton';
 import CustomInput from '../components/CustomInput';
 import { GoogleSignInButton } from '../components/GoogleSignInButton';
@@ -25,174 +22,34 @@ interface LoginScreenProps {
 }
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
-    // --- États locaux (Local State) ---
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+    // --- UI State ---
     const [passwordVisible, setPasswordVisible] = useState(false);
 
-    // --- Hooks ---
-    const { user } = useAuth();
-    const { showAlert } = useAlert();
+    // --- Logic Hook ---
+    const {
+        email,
+        setEmail,
+        password,
+        setPassword,
+        isLoading,
+        isGoogleLoading,
+        handleEmailLogin,
+        handleGoogleLogin
+    } = useAuthLogic();
 
-    // --- Navigation & Effets ---
-    // Rediriger automatiquement vers l'écran météo si l'utilisateur est déjà authentifié
+    const { user } = useAuth();
+
+    // --- Navigation Effect ---
     useEffect(() => {
         if (user) {
             navigation.replace('Weather');
         }
     }, [user, navigation]);
 
-    // --- Fonctions de Validation ---
+    // --- Navigation Handlers ---
+    const handleForgotPassword = () => navigation.navigate('ForgotPassword');
+    const handleSignUp = () => navigation.navigate('SignUp');
 
-    /**
-     * Vérifie si le format de l'email est valide
-     */
-    const validateEmail = (email: string): boolean => {
-        const emailRegex = /\S+@\S+\.\S+/;
-        return emailRegex.test(email);
-    };
-
-    /**
-     * Valide l'ensemble du formulaire de connexion
-     */
-    const validateForm = (): boolean => {
-        if (!email.trim()) {
-            showAlert({
-                title: 'Champ requis',
-                message: 'Veuillez saisir votre email',
-                type: 'warning'
-            });
-            return false;
-        }
-        if (!validateEmail(email)) {
-            showAlert({
-                title: 'Format invalide',
-                message: 'Veuillez saisir un email valide',
-                type: 'warning'
-            });
-            return false;
-        }
-        if (!password.trim()) {
-            showAlert({
-                title: 'Champ requis',
-                message: 'Veuillez saisir votre mot de passe',
-                type: 'warning'
-            });
-            return false;
-        }
-        if (password.length < 6) {
-            showAlert({
-                title: 'Sécurité',
-                message: 'Le mot de passe doit contenir au moins 6 caractères',
-                type: 'warning'
-            });
-            return false;
-        }
-        return true;
-    };
-
-    // --- Gestionnaires d'Actions (Action Handlers) ---
-
-    /**
-     * Gère la connexion par email et mot de passe via Firebase
-     */
-    const handleEmailLogin = async (): Promise<void> => {
-        if (!validateForm()) return;
-
-        setIsLoading(true);
-        try {
-            await signInWithEmailAndPassword(auth, email, password);
-            // Succès - la redirection se fait automatiquement via l'AuthContext
-        } catch (error: any) {
-            let errorMessage = 'Une erreur est survenue lors de la connexion';
-
-            switch (error.code) {
-                case 'auth/user-not-found':
-                    errorMessage = 'Aucun utilisateur trouvé avec cet email';
-                    break;
-                case 'auth/wrong-password':
-                    errorMessage = 'Mot de passe incorrect';
-                    break;
-                case 'auth/invalid-email':
-                    errorMessage = 'Email invalide';
-                    break;
-                case 'auth/too-many-requests':
-                    errorMessage = 'Trop de tentatives. Veuillez réessayer plus tard';
-                    break;
-                default:
-                    console.error('Login error:', error);
-            }
-
-            showAlert({
-                title: 'Erreur de connexion',
-                message: errorMessage,
-                type: 'error'
-            });
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    /**
-     * Gère l'authentification via Google (OAuth2)
-     */
-    const handleGoogleLogin = async (): Promise<void> => {
-        setIsGoogleLoading(true);
-        try {
-            console.log('Début du login Google');
-
-            const redirectUriOptions: any = { useProxy: true };
-            const redirectUri = AuthSession.makeRedirectUri(redirectUriOptions);
-
-            console.log('Redirect URI:', redirectUri);
-
-            const request = new AuthSession.AuthRequest({
-                clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
-                scopes: ['openid', 'profile', 'email'],
-                redirectUri,
-                responseType: 'id_token',
-                extraParams: {
-                    nonce: Math.random().toString(36).substring(2, 15),
-                },
-            });
-
-            const result = await request.promptAsync({
-                authorizationEndpoint: 'https://accounts.google.com/o/oauth2/v2/auth',
-            });
-
-            console.log('Result Google login:', result);
-
-            if (result.type === 'success') {
-                const { id_token } = result.params;
-                console.log('ID Token reçu');
-                if (id_token) {
-                    const credential = GoogleAuthProvider.credential(id_token);
-                    await signInWithCredential(auth, credential);
-                }
-            }
-        } catch (error) {
-            console.error('Google login error:', error);
-            showAlert({
-                title: 'Erreur Google',
-                message: 'Impossible de se connecter avec Google',
-                type: 'error'
-            });
-        } finally {
-            setIsGoogleLoading(false);
-        }
-    };
-
-    const handleForgotPassword = (): void => {
-        navigation.navigate('ForgotPassword');
-    };
-
-    const handleSignUp = (): void => {
-        navigation.navigate('SignUp');
-    };
-
-    // --- Rendu Principal ---
     return (
         <KeyboardAvoidingView
             style={styles.container}
@@ -231,10 +88,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
                         autoComplete="password"
                         icon={<Ionicons name="lock-closed-outline" size={20} color={COLORS.gray} />}
                         rightIcon={
-                            <TouchableOpacity
-                                onPress={() => setPasswordVisible(!passwordVisible)}
-                                disabled={isLoading}
-                            >
+                            <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)} disabled={isLoading}>
                                 <Ionicons
                                     name={passwordVisible ? "eye-off-outline" : "eye-outline"}
                                     size={20}
@@ -252,10 +106,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
                         disabled={isLoading || isGoogleLoading}
                         activeOpacity={0.7}
                     >
-                        <Text style={[
-                            styles.forgotPasswordText,
-                            (isLoading || isGoogleLoading) && styles.disabledText
-                        ]}>
+                        <Text style={[styles.forgotPasswordText, (isLoading || isGoogleLoading) && styles.disabledText]}>
                             Mot de passe oublié ?
                         </Text>
                     </TouchableOpacity>
@@ -282,14 +133,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
 
                     <View style={styles.signUpContainer}>
                         <Text style={styles.signUpText}>Pas encore de compte ? </Text>
-                        <TouchableOpacity
-                            onPress={handleSignUp}
-                            disabled={isLoading || isGoogleLoading}
-                        >
-                            <Text style={[
-                                styles.signUpLink,
-                                (isLoading || isGoogleLoading) && styles.disabledText
-                            ]}>
+                        <TouchableOpacity onPress={handleSignUp} disabled={isLoading || isGoogleLoading}>
+                            <Text style={[styles.signUpLink, (isLoading || isGoogleLoading) && styles.disabledText]}>
                                 S'inscrire
                             </Text>
                         </TouchableOpacity>

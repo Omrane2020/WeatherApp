@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1034357673378",
+    "project_id": "weatherapp-dbad1",
+    "storage_bucket": "weatherapp-dbad1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1034357673378:android:70cd96660c126f90d5f6fb",
+        "android_client_info": {
+          "package_name": "com.omrane.weatherapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1034357673378-3r7bmldbhhrnusvib4h8arhsp041bfml.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZd6nHiBcz1yGWIKbhspsyE7AHAlOcQj4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1034357673378-3r7bmldbhhrnusvib4h8arhsp041bfml.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

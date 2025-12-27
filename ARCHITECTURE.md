@@ -1,6 +1,6 @@
-# Architecture du Projet - WeatherLive 🌤️
+# Architecture du Projet - WeatherApp 🌤️
 
-Ce document détaille l'architecture technique, les choix technologiques et les bonnes pratiques appliquées dans le développement de l'application **WeatherLive**.
+Ce document détaille l'architecture technique, les choix technologiques et les bonnes pratiques appliquées dans le développement de l'application **WeatherApp**.
 
 ## 🏗️ Structure du Projet
 

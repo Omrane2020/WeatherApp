@@ -85,6 +85,9 @@ GOOGLE_CLIENT_ID=your_google_client_id
 ![interface principale'](/ScreenShoot/Screenshot_20251226-210918.png)
 ![Consamation de'api](/ScreenShoot/Screenshot_20251226-210945.png)
 ![Alert de Historique qui'l soit efface ](/ScreenShoot/Screenshot_20251226-201945.jpg)
+![connexion via google](googleauth-1.png)
+![Connexion via Google](googleauth.png)
+
 ## Gestion des erreurs
 
 - Erreurs d'authentification affichées via Alert.
